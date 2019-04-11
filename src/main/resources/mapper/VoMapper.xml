@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.VoMapper">
+	
+	<select id="getUser" resultType="com.entity.Dd_User"
+		parameterType="java.lang.String">
+		select a.* from dd_users a where a.userid=#{userid}
+	</select>	
+	
+	<select id="getQuyu" resultType="com.entity.Dd_Info_Dic"
+		parameterType="java.lang.String">
+		select a.* from dd_info_dic a where FIND_IN_SET(a.name,#{_parameter} );
+	</select>
+	<insert id="putUser" parameterType="java.util.Map">
+    insert into dd_users
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="department != null" >
+        department,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="removed != null" >
+        removed,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="department != null" >
+        #{department,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="removed != null" >
+        #{removed,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+	
+	
+	<select id="getPermission" resultType="com.entity.Dd_User_Quyu_Per"
+		parameterType="java.lang.String">
+		select t.*,c.name from dd_user_quyu_per t,dd_info_dic c 
+		where t.permission=c.code
+		and t.userid=#{userid}
+		and t.removed=0
+		and t.type=1
+		ORDER BY c.priority
+	</select>	
+	
+	<select id="getAllPermission" resultType="com.entity.Dd_User_Quyu_Per"
+		parameterType="java.lang.String">
+		select t.*,c.name from dd_user_quyu_per t,dd_info_dic c 
+		where t.permission=c.code
+		and t.userid=#{userid}
+		and t.type=1
+		ORDER BY c.priority
+	</select>
+	
+	<select id="getDic_Info" resultType="com.entity.Dd_Info_Dic"
+		parameterType="java.lang.String">
+		select t.* from dd_info_dic t 
+		where removed=0 
+		<if test="code_type != null" >
+        and t.code_type=#{code_type}
+      	</if>
+      	<if test="father_code != null" >
+        AND t.father_code=#{father_code}
+      	</if>
+		order by t.priority
+	</select>	
+	
+	
+	<insert id="addDd_User_Quyu_Per" parameterType="com.entity.Dd_User_Quyu_Per">
+    insert into dd_user_quyu_per
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="permission != null" >
+        permission,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="removed != null" >
+        removed,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="permission != null" >
+        #{permission,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="removed != null" >
+        #{removed,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateDd_User_Quyu_Per"  parameterType="com.entity.Dd_User_Quyu_Per">
+            UPDATE dd_user_quyu_per
+                SET removed = #{removed}
+            WHERE id = #{id}
+    </update>
+    
+    <insert id="addOperation" parameterType="com.entity.Dd_Operation">
+    insert into dd_operation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="operation_type != null" >
+        operation_type,
+      </if>
+      <if test="parameter != null" >
+        parameter,
+      </if>
+      <if test="before_status != null" >
+        before_status,
+      </if>
+      <if test="after_status != null" >
+        after_status,
+      </if>
+      <if test="success != null" >
+        success,
+      </if>
+      <if test="error_msg != null" >
+        error_msg,
+      </if>
+      <if test="operation_time != null" >
+        operation_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="operation_type != null" >
+        #{operation_type,jdbcType=INTEGER},
+      </if>
+      <if test="parameter != null" >
+        #{parameter,jdbcType=VARCHAR},
+      </if>
+      <if test="before_status != null" >
+        #{before_status,jdbcType=VARCHAR},
+      </if>
+      <if test="after_status != null" >
+        #{after_status,jdbcType=VARCHAR},
+      </if>
+      <if test="before_status != null" >
+        #{before_status,jdbcType=VARCHAR},
+      </if>
+      <if test="success != null" >
+        #{success,jdbcType=VARCHAR},
+      </if>
+      <if test="error_msg != null" >
+        #{error_msg,jdbcType=VARCHAR},
+      </if>
+      <if test="operation_time != null" >
+        #{operation_time},
+      </if>
+    </trim>
+  </insert>
+  <select id="countOperation" parameterType="String" resultType="Integer">
+	SELECT count(*) from dd_operation t where t.userid=#{userid}
+  </select>
+</mapper> 
