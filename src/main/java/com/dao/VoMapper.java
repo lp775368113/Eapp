@@ -35,4 +35,6 @@ public interface VoMapper{
 	void addOperation(Dd_Operation op);
 
 	int countOperation(String userid);
+	
+	void updateUser(Map res);
 }

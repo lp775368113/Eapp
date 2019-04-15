@@ -206,4 +206,29 @@
   <select id="countOperation" parameterType="String" resultType="Integer">
 	SELECT count(*) from dd_operation t where t.userid=#{userid}
   </select>
+  
+   <update id="updateUser" parameterType="java.util.Map" >
+    update dd_users
+    <set >
+      <if test="name != null" >
+        name = #{name},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile},
+      </if>
+      <if test="email != null" >
+        email = #{email},
+      </if>
+      <if test="department != null" >
+        department = #{department},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark},
+      </if>
+      <if test="removed != null" >
+        removed = #{removed},
+      </if>
+    </set>
+    where userid = #{userid}
+  </update>
 </mapper> 

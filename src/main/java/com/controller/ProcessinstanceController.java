@@ -66,14 +66,14 @@ public class ProcessinstanceController {
 			 * 如果想复用审批固定流程，使用或签会签的话，可以不传审批人，具体请参考文档： https://open-doc.dingtalk.com/microapp/serverapi2/ebkwx8
 			 * 本次quickstart，演示不传审批人的场景
 			 */
-			request.setApprovers("15523680118216167");
+			request.setApprovers("090665405736934101");
 			request.setOriginatorUserId(processInstance.getOriginatorUserId());
 			request.setDeptId(processInstance.getDeptId());
 			request.setCcList("15523680118216167");
 			request.setCcPosition("FINISH");
 			String sqqx=processInstance.getTextForms().get(0).getValue();
 			OapiProcessinstanceCreateResponse response = client.execute(request, AccessTokenUtil.getToken());
-
+			
 			if (response.getErrcode().longValue() != 0) {
 				return ServiceResult.failure(String.valueOf(response.getErrorCode()), response.getErrmsg());
 			}
@@ -83,7 +83,7 @@ public class ProcessinstanceController {
 
 		} catch (Exception e) {
 			String errLog = LogFormatter.getKVLogData(LogEvent.END,
-				LogFormatter.KeyValue.getNew("processInstance", JSON.toJSONString(processInstance)));
+			LogFormatter.KeyValue.getNew("processInstance", JSON.toJSONString(processInstance)));
 			bizLogger.info(errLog,e);
 			Dd_Operation op=Dd_Operation.getInstance(processInstance.getOriginatorUserId(), 18, "", "false", e.getMessage());
 			voMapper.addOperation(op);//添加登录日志到数据库

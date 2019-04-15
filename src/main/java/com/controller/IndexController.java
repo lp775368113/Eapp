@@ -78,7 +78,17 @@ public class IndexController {
 			OapiUserGetResponse userProfile = getUserProfile(accessToken, userId);
 			int count=voMapper.countOperation(userId);
 			String userName = userProfile.getName();
-			Long deptId = userProfile.getDepartment().get(0);
+			Long deptId =-1l;
+			System.out.println("|||||||||userProfile"+userProfile.toString());
+			System.out.println("++++++++userName"+userName);
+			if(userProfile.getDepartment()==null&&"036719655126445688".equals(userId)) {
+				deptId=71106295l;
+			}else {
+				System.out.println("=====部门号："+userProfile.getDepartment());
+				
+				deptId= userProfile.getDepartment().get(0);
+			}
+			
 			String email = userProfile.getEmail();
 			String mobile = userProfile.getMobile();
 			String remark = userProfile.getRemark();
@@ -98,12 +108,15 @@ public class IndexController {
 			if (deptId.longValue() == 1L) {// 审批里的部门id，1和-1要互相转换一下
 				deptId = -1L;
 			}
-			resultMap.put("deptId", deptId);
 			resultMap.put("department", deptId);
 			Dd_User user = voMapper.getUser(userId);
 			if (user == null) {
 				voMapper.putUser(resultMap);
+			}else {
+				voMapper.updateUser(resultMap);
 			}
+			Dd_User newuser = voMapper.getUser(userId);
+			resultMap.put("deptId", newuser.getDepartment());
 			List<Dd_User_Quyu_Per> list = voMapper.getPermission(userId);
 			if (list.size() == 0) {
 				resultMap.put("quanxian", false);
