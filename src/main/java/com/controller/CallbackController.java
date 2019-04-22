@@ -24,6 +24,8 @@ import com.entity.Dd_User_Quyu_Per;
 import com.taobao.api.ApiException;
 import com.util.AccessTokenUtil;
 import com.util.MessageUtil;
+import com.util.dbutil.UpdateMateriel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -88,9 +90,9 @@ public class CallbackController {
             String encryptMsg = json.getString("encrypt");
             String plainText = dingTalkEncryptor.getDecryptMsg(signature, timestamp, nonce, encryptMsg);
             JSONObject obj = JSON.parseObject(plainText);
-
             //根据回调数据类型做不同的业务处理
             String eventType = obj.getString("EventType");
+            String processCode=obj.getString("processCode");
             if (BPMS_TASK_CHANGE.equals(eventType)) {
                 //bizLogger.info("收到审批任务进度更新: " + plainText);
                 //todo: 实现审批的业务逻辑，如发消息
@@ -98,8 +100,8 @@ public class CallbackController {
                // bizLogger.info("收到审批实例状态更新: " + plainText);
                 //todo: 实现审批的业务逻辑，如发消息
                 String processInstanceId = obj.getString("processInstanceId");
-                if (obj.containsKey("result") && obj.getString("result").equals("agree")) {
-                   
+                //区域权限申请回调
+                if (obj.containsKey("result") && obj.getString("result").equals("agree")&&"PROC-FFYJ66TV-XQZ3EWD526QFE96HMKEN3-MI1XMNTJ-N1".equals(processCode)) {
                     Map<String,String> a=MessageUtil.getProcessinstanceById(processInstanceId);
                     String userid=a.get("userid");
                     String accessToken = AccessTokenUtil.getToken();
@@ -139,9 +141,27 @@ public class CallbackController {
             			voMapper.addOperation(op);//添加登录日志到数据库
                 		 MessageUtil.sendMessageToOriginator(processInstanceId);//发送通知
             		}
+            		//物料审批回调 同意
+                }else if(obj.containsKey("result") && obj.getString("result").equals("agree")&&"PROC-D2BB2099-F117-4B81-AEF1-A9ABD1FFEE21".equals(processCode)) {
+                	Map<String,String> a=MessageUtil.getProcessinstanceById(processInstanceId);
+                	String id=a.get("物料唯一识别码");
+                	int num=UpdateMateriel.agree(id);
+                	if(num==0) {
+                		Dd_Operation op=Dd_Operation.getInstance("物料系统", 44, "物料唯一识别码："+id, "false", "同意 更新数据为0");
+                		voMapper.addOperation(op);//添加登录日志到数据库
+                	}
+                	//物料审批回调 不同意
+                }else if(obj.containsKey("result") && obj.getString("result").equals("refuse")&&"PROC-D2BB2099-F117-4B81-AEF1-A9ABD1FFEE21".equals(processCode)) {
+                	Map<String,String> a=MessageUtil.getProcessinstanceById(processInstanceId);
+                	String id=a.get("物料唯一识别码");
+                	int num=UpdateMateriel.refuse(id);
+                	if(num==0) {
+                		Dd_Operation op=Dd_Operation.getInstance("物料系统", 44, "物料唯一识别码："+id, "false", "不同意 更新数据为0");
+                		voMapper.addOperation(op);//添加登录日志到数据库
+                	}
                 }
-            } else {
-                // 其他类型事件处理
+            } else{
+            	
             }
             // 返回success的加密信息表示回调处理成功
             return dingTalkEncryptor.getEncryptedMap(CALLBACK_RESPONSE_SUCCESS, System.currentTimeMillis(), Utils.getRandomStr(8));
