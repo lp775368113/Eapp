@@ -24,6 +24,8 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _GetQueryDIYData_QNAME = new QName("http://www.WebService.demo.example.com", "getQueryDIYData");
+    private final static QName _GetQueryDIYDataResponse_QNAME = new QName("http://www.WebService.demo.example.com", "getQueryDIYDataResponse");
     private final static QName _GetQueryData_QNAME = new QName("http://www.WebService.demo.example.com", "getQueryData");
     private final static QName _GetQueryDataResponse_QNAME = new QName("http://www.WebService.demo.example.com", "getQueryDataResponse");
 
@@ -32,6 +34,22 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link GetQueryDIYData }
+     * 
+     */
+    public GetQueryDIYData createGetQueryDIYData() {
+        return new GetQueryDIYData();
+    }
+
+    /**
+     * Create an instance of {@link GetQueryDIYDataResponse }
+     * 
+     */
+    public GetQueryDIYDataResponse createGetQueryDIYDataResponse() {
+        return new GetQueryDIYDataResponse();
     }
 
     /**
@@ -48,6 +66,32 @@ public class ObjectFactory {
      */
     public GetQueryDataResponse createGetQueryDataResponse() {
         return new GetQueryDataResponse();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetQueryDIYData }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link GetQueryDIYData }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://www.WebService.demo.example.com", name = "getQueryDIYData")
+    public JAXBElement<GetQueryDIYData> createGetQueryDIYData(GetQueryDIYData value) {
+        return new JAXBElement<GetQueryDIYData>(_GetQueryDIYData_QNAME, GetQueryDIYData.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetQueryDIYDataResponse }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link GetQueryDIYDataResponse }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://www.WebService.demo.example.com", name = "getQueryDIYDataResponse")
+    public JAXBElement<GetQueryDIYDataResponse> createGetQueryDIYDataResponse(GetQueryDIYDataResponse value) {
+        return new JAXBElement<GetQueryDIYDataResponse>(_GetQueryDIYDataResponse_QNAME, GetQueryDIYDataResponse.class, null, value);
     }
 
     /**

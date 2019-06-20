@@ -132,7 +132,7 @@ public class IndexController {
 			logger.error(e.getMessage(), e);
 			Dd_Operation op=Dd_Operation.getInstance(userId, 15, "", "false", e.getMessage());
 			voMapper.addOperation(op);//添加登录日志到数据库
-			return ServiceResult.failure("0", e.getMessage());
+			return ServiceResult.failure("0", "系统异常！请联系维护人员！");
 		}
 		return serviceResult;
 	}
@@ -316,6 +316,105 @@ public class IndexController {
 		}
 		ServiceResult serviceResult = ServiceResult.success(dics);
 		return serviceResult;
+	}
+	
+	
+	@RequestMapping(value = "/querydiy")
+	@ResponseBody
+	public Map querydiy(@RequestParam Map para) {
+		String xh = (String) para.get("xh");
+		String starttime=(String) para.get("starttime");
+		String endtime=(String) para.get("endtime");
+		String userid = (String) para.get("userid");
+		Map<String, Object> result = new HashMap<String, Object>();
+		try {
+			// 请求接口获取今日和本月数据
+			JaxWsProxyFactoryBean jwpfb = new JaxWsProxyFactoryBean();
+			jwpfb.setServiceClass(CommonService.class);
+			InputStream is = IndexController.class.getClassLoader().getResourceAsStream("para.properties");
+			Properties pro = new Properties();
+			pro.load(is);
+			String webServiceURL = pro.getProperty("webServiceURL");
+			jwpfb.setAddress(webServiceURL);
+			CommonService hw = (CommonService) jwpfb.create();
+			String res = "{endtime:\""+endtime+"\",starttime:\""+starttime+"\",xh:\"" + xh + "\"}";
+			String json = hw.getQueryDIYData(res);
+			JSONObject jsonObject = JSONObject.fromObject(json);
+			Map<String,Object> classMap = new HashMap<String,Object>();
+			classMap.put("dayData", Pq.class);
+			Model stu = (Model) JSONObject.toBean(jsonObject, Model.class, classMap);
+			Boolean success=stu.getSuccess();
+			if(success) {
+				List<Pq> listday = (List<Pq>) stu.getDayData();
+				Map<String,Pq> dayData = new HashMap<String,Pq>();
+				List<Dd_User_Quyu_Per> pers = voMapper.getPermission(userid);// 获取用户权限数据
+				for (Dd_User_Quyu_Per duqp : pers) {// 筛选权限数据
+					for (Pq vo : listday) {
+						if (vo.getName_code().equals(duqp.getPermission())) {
+							vo.setName(duqp.getName());
+							dayData.put(vo.getName_code(), vo);
+						}
+					}
+					Boolean dayHave=dayData.containsKey(duqp.getPermission());
+					if(!dayHave) {
+						Pq pq=new Pq();
+						pq.setName(duqp.getName());
+						pq.setName_code(duqp.getPermission());
+						pq.setShuliang("0");
+						pq.setXiaoliang("0");
+						dayData.put(duqp.getPermission(), pq);
+					}
+				}
+				List<Zq> dayZqList=new ArrayList<Zq>();
+				Map<String,String> getZq=new HashMap<String,String>();
+				getZq.put("code_type", "XLQY1");
+				List<Dd_Info_Dic> zqs=voMapper.getDic_Info(getZq);
+				for(Dd_Info_Dic zqdic:zqs){
+					Zq zq=new Zq();
+					zq.setName(zqdic.getName());
+					zq.setName_code(zqdic.getCode());
+					List<Dq> dqs=new ArrayList<Dq>();
+					Map<String,String> getDq=new HashMap<String,String>();
+					getDq.put("father_code", zqdic.getCode());
+					List<Dd_Info_Dic> dqsdic=voMapper.getDic_Info(getDq);
+					for(Dd_Info_Dic dqdic:dqsdic) {
+						Dq dq=new Dq();
+						dq.setName(dqdic.getName());
+						dq.setName_code(dqdic.getCode());
+						List<Pq> pqs=new ArrayList<Pq>();
+						Map<String,String> getPq=new HashMap<String,String>();
+						getPq.put("father_code",dqdic.getCode());
+						List<Dd_Info_Dic> pqsdic=voMapper.getDic_Info(getPq);
+						for(Dd_Info_Dic pqidc:pqsdic) {
+							Pq pq=dayData.get(pqidc.getCode());
+							pqs.add(pq);
+						}
+						dq.setPq(pqs);
+						dqs.add(dq);
+					}
+					zq.setDq(dqs);
+					dayZqList.add(zq);
+				}
+				result.put("dayData", dayZqList);
+				result.put("success", true);
+				Dd_Operation op=Dd_Operation.getInstance(userid, 16, "型号："+xh+"开始时间:"+starttime+"结束时间:"+endtime, "true", "");
+				voMapper.addOperation(op);//添加登录日志到数据库
+			}else {
+				result.put("success", false);
+				result.put("message", stu.getMessage());
+				Dd_Operation op=Dd_Operation.getInstance(userid, 16,  "型号："+xh+"开始时间:"+starttime+"结束时间:"+endtime, "false", stu.getMessage());
+				voMapper.addOperation(op);//添加登录日志到数据库
+			}
+			logger.info("返回数据" + result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.put("success", false);
+			result.put("message", e.getMessage());
+			Dd_Operation op=Dd_Operation.getInstance(userid, 16,  "型号："+xh+"开始时间:"+starttime+"结束时间:"+endtime, "false", e.getMessage());
+			voMapper.addOperation(op);//添加登录日志到数据库
+			logger.error(e.getMessage(),e);
+		}
+		return result;
 	}
 	
 	

@@ -11,6 +11,7 @@ import com.entity.Dd_Info_Dic;
 import com.entity.Dd_Operation;
 import com.entity.Dd_User;
 import com.entity.Dd_User_Quyu_Per;
+import com.text.vo.daochu;
 @Mapper
 public interface VoMapper{
 
@@ -37,4 +38,8 @@ public interface VoMapper{
 	int countOperation(String userid);
 	
 	void updateUser(Map res);
+
+	List<daochu> getAlldaochu();
+
+	void updatedaochu(daochu d);
 }

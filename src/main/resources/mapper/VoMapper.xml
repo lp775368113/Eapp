@@ -231,4 +231,42 @@
     </set>
     where userid = #{userid}
   </update>
+  
+  <select id="getAlldaochu" resultType="com.text.vo.daochu">
+  	select * from daochu
+  </select>
+  
+  <update id="updatedaochu" parameterType="com.text.vo.daochu" >
+  	update daochu
+    <set >
+      <if test="a != null" >
+        a = #{a},
+      </if>
+      <if test="b != null" >
+        b = #{b},
+      </if>
+      <if test="c != null" >
+        c = #{c},
+      </if>
+      <if test="d != null" >
+        d = #{d},
+      </if>
+      <if test="e != null" >
+        e = #{e},
+      </if>
+      <if test="f != null" >
+        f = #{f},
+      </if>
+      <if test="g != null" >
+        g = #{g},
+      </if>
+      <if test="h != null" >
+        h = #{h},
+      </if>
+      <if test="i != null" >
+        i = #{i},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
 </mapper> 
